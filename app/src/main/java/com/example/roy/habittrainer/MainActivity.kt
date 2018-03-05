@@ -2,6 +2,7 @@ package com.example.roy.habittrainer
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -10,8 +11,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        tv_title.text = getString(R.string.card_title_sample)
-        tv_description.text = getString(R.string.card_description_sample)
-        iv_icon.setImageResource(R.drawable.water)
+        recycler.setHasFixedSize(true)
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.adapter = HabitsAdapter(getSampleHabits())
     }
 }
