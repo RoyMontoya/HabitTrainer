@@ -3,4 +3,10 @@
     <string name="habit_icon">Habit icon</string>
     <string name="card_title_sample">Drink Water</string>
     <string name="card_description_sample">A refreshing glass of water keeps you hydrated</string>
+    <string name="manu_item_new_habit">begin habit</string>
+    <string name="create_habit_hint_title">eat an apple</string>
+    <string name="create_habit_hint_description">an apple a day keeps the dorctor away</string>
+    <string name="button_text_choose_image">choose image…</string>
+    <string name="create_habit_content_description">Selected Image</string>
+    <string name="button_text_save_habit">save habit</string>
 </resources>
