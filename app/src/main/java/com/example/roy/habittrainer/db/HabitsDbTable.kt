@@ -1,5 +1,6 @@
 package com.example.roy.habittrainer.db
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -16,9 +17,21 @@ class HabitsDbTable(context: Context) {
 
     private val dbHelper = HabitTrainerDb(context)
 
-    fun store(): Long {
+    fun store(habit: Habit): Long {
+        val db = dbHelper.writableDatabase
 
+        val values = ContentValues()
+        with(values) {
+            put(HabitEntry.TITLE_COLUMN, habit.title)
+            put(HabitEntry.DESCRIPTION_COLUMN, habit.description)
+            put(HabitEntry.IMAGE_COLUMN, toByteArray(habit.image))
+        }
 
+        val id = db.transaction {
+            insert(HabitEntry.TABLE_NAME, null, values)
+        }
+
+        return id
     }
 
     fun readAllHabits(): List<Habit> {

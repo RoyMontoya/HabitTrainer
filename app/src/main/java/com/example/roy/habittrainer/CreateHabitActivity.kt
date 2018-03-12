@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import com.example.roy.habittrainer.db.HabitsDbTable
 import kotlinx.android.synthetic.main.activity_create_habit.*
+import kotlinx.android.synthetic.main.card_single_habit.*
 import java.io.IOException
 
 class CreateHabitActivity : AppCompatActivity() {
@@ -44,7 +46,18 @@ class CreateHabitActivity : AppCompatActivity() {
             return
         }
 
-        tv_error.visibility = View.INVISIBLE
+        val title = et_title.text.toString()
+        val description = et_description.text.toString()
+        val habit = Habit(title, description, choosenBitmap!!)
+
+        val id = HabitsDbTable(this).store(habit)
+
+        if (id == -1L) {
+            displayError("Habit could not be stored")
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
     }
 
     private fun displayError(errorDescription: String) {
