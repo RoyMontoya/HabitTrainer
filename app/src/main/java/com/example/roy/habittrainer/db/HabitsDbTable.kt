@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.example.roy.habittrainer.Habit
+import com.example.roy.habittrainer.db.HabitEntry.DESCRIPTION_COLUMN
+import com.example.roy.habittrainer.db.HabitEntry.TABLE_NAME
+import com.example.roy.habittrainer.db.HabitEntry.TITLE_COLUMN
+import com.example.roy.habittrainer.db.HabitEntry._ID
 import java.io.ByteArrayOutputStream
 
 /**
@@ -22,8 +26,8 @@ class HabitsDbTable(context: Context) {
 
         val values = ContentValues()
         with(values) {
-            put(HabitEntry.TITLE_COLUMN, habit.title)
-            put(HabitEntry.DESCRIPTION_COLUMN, habit.description)
+            put(TITLE_COLUMN, habit.title)
+            put(DESCRIPTION_COLUMN, habit.description)
             put(HabitEntry.IMAGE_COLUMN, toByteArray(habit.image))
         }
 
@@ -35,25 +39,27 @@ class HabitsDbTable(context: Context) {
     }
 
     fun readAllHabits(): List<Habit> {
-        val columns = arrayOf(HabitEntry._ID, HabitEntry.TITLE_COLUMN, HabitEntry.DESCRIPTION_COLUMN,
+        val columns = arrayOf(_ID, TITLE_COLUMN, DESCRIPTION_COLUMN,
                 HabitEntry.IMAGE_COLUMN)
 
-        val order = "${HabitEntry._ID} ASC"
+        val order = "${_ID} ASC"
 
         val db = dbHelper.readableDatabase
 
-        val cursor: Cursor = db.doQuery(HabitEntry.TABLE_NAME, columns, orderBy = order)
+        val cursor: Cursor = db.doQuery(TABLE_NAME, columns, orderBy = order)
 
+        return parseHabitsFrom(cursor)
+    }
+
+    private fun parseHabitsFrom(cursor: Cursor): MutableList<Habit> {
         val habits = mutableListOf<Habit>()
         while (cursor.moveToNext()) {
-            val title = cursor.getString(cursor.getColumnIndex(HabitEntry.TITLE_COLUMN))
-            val description = cursor.getString(cursor.getColumnIndex(HabitEntry.DESCRIPTION_COLUMN))
-            val byteArray = cursor.getBlob(cursor.getColumnIndex(HabitEntry.IMAGE_COLUMN))
-            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            val title = cursor.getString(TITLE_COLUMN)
+            val description = cursor.getString(DESCRIPTION_COLUMN)
+            val bitmap = cursor.getBitmap(HabitEntry.IMAGE_COLUMN)
             habits.add(Habit(title, description, bitmap))
         }
         cursor.close()
-
         return habits
     }
 
@@ -63,6 +69,13 @@ class HabitsDbTable(context: Context) {
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return stream.toByteArray()
     }
+}
+
+private fun Cursor.getString(columnName: String) = getString(getColumnIndex(columnName))
+
+private fun Cursor.getBitmap(columnName: String): Bitmap {
+    val bytes = getBlob(getColumnIndex(columnName))
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 }
 
 
